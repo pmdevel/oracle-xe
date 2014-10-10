@@ -1,0 +1,5 @@
+8080
+1521
+oracle
+oracle
+y

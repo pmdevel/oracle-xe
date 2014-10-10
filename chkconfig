@@ -1,0 +1,316 @@
+#!/usr/bin/perl -w
+use strict;
+use Getopt::Long;
+##Verson 0.5
+
+ #configuration vars
+  my $BASEDIR   = "/etc";
+  my $SCRIPTDIR = "$BASEDIR/init.d";
+  my $SCRIPT_IGNORE = ".dpkg-dist,README";
+  my $MAXINITLVL= "6";
+  my @INITDIRS  = ("$BASEDIR/rc0.d",
+                   "$BASEDIR/rc1.d",
+                   "$BASEDIR/rc2.d",
+                   "$BASEDIR/rc3.d",
+                   "$BASEDIR/rc4.d",
+                   "$BASEDIR/rc5.d",
+                   "$BASEDIR/rc6.d",
+                   "$BASEDIR/rcS.d");
+  my @INITFILES;
+  &GetINITFILES;
+
+  my %SERVICES;
+  &GetSERVICES;
+
+ #globals
+  my $list; my $listName;
+  my $add; my $addconfig;
+  my $del;
+  my $level; my $levelName; my $levelOption;
+
+  GetOptions('list|l'   => \$list,
+             'add|a:s'  => \$add,
+             'del:s'    => \$del,
+             'config:s' => \$addconfig,
+             'level:s'    => \$level);
+
+  if($list){
+    $listName=$ARGV[0];
+    DisplayInitList($listName);
+  }
+  elsif($add){
+    &AddService;
+  }
+  elsif($del){
+    &DelService;
+  }
+  elsif($level){
+    $levelName   = $ARGV[0];
+    $levelOption = lc($ARGV[1]);
+    &UpdateService;
+  }
+  else{
+    &DisplayUsage;
+  }#fi
+
+exit(0);
+
+######################################################################
+sub UpdateService{
+  my $tmp; my $tmp2; my $tmp3;
+  my $startval; my $endval;
+  
+  if (-e "$SCRIPTDIR/$levelName"){
+
+    if ($addconfig){
+      ($startval,$endval) = split /,/,$addconfig;
+    }
+    else{
+      open(INFILE,"$SCRIPTDIR/$levelName") or die "Unable to open $SCRIPTDIR/$add for reading.\n";
+        while(<INFILE>){
+          if (/\s{0,}#\s{0,}chkconfig:\s{1,}(\d{1,})\s{1,}(\d{1,2})\s{1,}(\d{1,2})/){
+            $tmp=$1; $startval = $2; $endval = $3;
+          }#fi
+        }#elihw
+      close(INFILE);
+      if ((! $startval) || (! $endval)){
+        die "$levelName is not configured for traditional chkconfig, use the --config sub-option.\n";
+      }#fi
+    }#fi
+
+    if(IsInt($level) && IsInt($startval) && IsInt($endval)){
+      if (($levelOption eq "on") || ($levelOption eq "off")){
+        foreach $tmp (split //, $level){
+          if($tmp <= ($MAXINITLVL+1)){
+            #remove existing links
+            $tmp2 = `ls $INITDIRS[$tmp]/*$levelName 2>/dev/null&`;
+            foreach $tmp3 (split /\n/,$tmp2){unlink $tmp3;}#hcaerof
+    
+            #add new links
+            if ($levelOption eq "on"){
+              link "$SCRIPTDIR/$levelName", "$INITDIRS[$tmp]/S$startval$levelName";
+            }
+            elsif($levelOption eq "off"){
+              link "$SCRIPTDIR/$levelName", "$INITDIRS[$tmp]/K$endval$levelName";
+            }#fi
+          }
+          else{
+            die "$tmp is an invalid init level\n";
+          }#fi
+
+        }#hcaerof
+      }
+      else{
+        die "$levelOption is an invalid service option.";
+      }#fi
+    }
+    else{
+      die "One of these is either not present or not valid.\nlevels: $level\nstart: $startval\nkill: $endval\n";
+    }#fi
+  }
+  else{
+    die "$SCRIPTDIR/$levelName does not exist exiting...\n";
+  }#fi
+
+}#ecivreSetadpU
+
+######################################################################
+sub DelService{
+ if($_[0]){$del = $_[0];}
+ my $tmp; my $tmp2; my $tmp3;
+ if (-e "$SCRIPTDIR/$del"){
+   foreach $tmp (0 .. $MAXINITLVL+1){ ##Add one to take care of the '7th' level rsS.d.
+     $tmp2 = `ls $INITDIRS[$tmp]/*$del 2>/dev/null& `;
+     foreach $tmp3 (split /\n/,$tmp2){
+       unlink $tmp3;
+     }#hcaerof
+   }#hcaerof
+ }
+ else{
+   die "$SCRIPTDIR/$add does not exist... exititng\n";
+ }#fi
+  
+}#ecivreSleD
+
+######################################################################
+sub AddService{
+  my $runlevels = ""; my $startval = ""; my $endval = "";
+  my $tmp; my $tmp2;
+  
+  if($addconfig){
+    ($runlevels,$startval,$endval) = split /,/,$addconfig;
+  }
+  else{ #try for old-school configuration.
+        #># chkconfig: 2345 20 80
+    if (-e "$SCRIPTDIR/$add"){
+      open(INFILE,"$SCRIPTDIR/$add") or die "Unable to open $SCRIPTDIR/$add for reading.\n";
+        while(<INFILE>){
+          if (/\s{0,}#\s{0,}chkconfig:\s{1,}(\d{1,})\s{1,}(\d{1,2})\s{1,}(\d{1,2})/){
+            $runlevels=$1; $startval = $2; $endval = $3;
+          }#fi
+        }#elihw
+      close(INFILE);
+    }else{
+      print "$SCRIPTDIR/$add does not exist.\n";
+      print "Use the --list option to see all files available..\n\n";
+    }#fi
+  }#fi
+
+  if(IsInt($runlevels) && IsInt($startval) && IsInt($endval)){
+
+    &DelService($add);
+
+    foreach $tmp (0 .. $MAXINITLVL){
+      if ($runlevels =~ /$tmp/){
+        link "$SCRIPTDIR/$add", "$INITDIRS[$tmp]/S$startval$add";
+      }
+      else{
+        link "$SCRIPTDIR/$add", "$INITDIRS[$tmp]/K$endval$add";
+      }#fi
+    }#rof
+    
+  }
+  else{
+    die "$add is not configured for traditional chkconfig, use the --config sub-option.\n";
+  }#fi
+  
+}#ecivreSddA
+
+######################################################################
+sub DisplayInitList{
+ # DisplayInitList will display an the InitList for $service if given
+ # or it will display a complete listing. The listing will be in the 
+ # following format:
+ # >service         0:na    1:on    2:on    3:on    4:off   5:off   6:off<
+ 
+ #local vars
+  my $service; $service=$_[0];
+  my $tmp; my $tmp2; my $tmp3;
+  my $output;
+
+ #display config
+  my $runColWidth="7";
+  my $serviceColWidth="18";
+  my $noConfigStr=":off*";
+  
+  if($service){
+
+    if($SERVICES{$service}){
+      $output = "$service";
+      for ($tmp3 = length($service); $tmp3 < $serviceColWidth;$tmp3++){
+        $output .= " ";
+      }#rof
+      for $tmp2 (0 .. $MAXINITLVL){
+        if($SERVICES{$service}->{$tmp2}){
+          $output .= "$SERVICES{$service}->{$tmp2}";
+          for (0 .. ($runColWidth - length($SERVICES{$service}->{$tmp2}))){$output .= " ";}#rof
+        }
+        else{
+          $output .= "$tmp2$noConfigStr";
+          for (0 .. ($runColWidth - length("$tmp2$noConfigStr"))){$output .= " ";}#rof
+        }#fi
+      }#rof
+      print $output . "\n";
+    }
+    else{
+      print "$service is not found in $SCRIPTDIR\n";
+    }#fi
+    
+  }
+  else{
+    
+    foreach $tmp (sort(keys %SERVICES)){
+      $output = "$tmp";
+      for ($tmp3 = length($tmp); $tmp3 < $serviceColWidth;$tmp3++){
+        $output .= " ";
+      }#rof
+      for $tmp2 (0 .. $MAXINITLVL){
+        if($SERVICES{$tmp}->{$tmp2}){
+          $output .= "$SERVICES{$tmp}->{$tmp2}";
+          for (0 .. ($runColWidth - length($SERVICES{$tmp}->{$tmp2}))){$output .= " ";}#rof
+        }
+        else{
+          $output .= "$tmp2$noConfigStr";
+          for (0 .. ($runColWidth - length("$tmp2$noConfigStr"))){$output .= " ";}#rof
+        }#fi
+      }#rof
+      print $output . "\n";
+    }#hcaerof
+
+  }#fi
+}#tsiLtinIyalpsiD
+
+######################################################################
+sub GetSERVICES{
+  my $tmp; my $tmp2; my $tmp3;
+  my $flag; my $count;
+
+  foreach $tmp (`ls $SCRIPTDIR`){
+    chomp($tmp);
+    $flag=0;
+    foreach $tmp2 (split /,/,$SCRIPT_IGNORE){if($tmp =~/$tmp2/){$flag++;}}#hcaerof
+    if(! $flag){
+      $count=0;
+      foreach (@INITDIRS){
+        if (@{$INITFILES[$count]}){
+          foreach $tmp2 (@{$INITFILES[$count]}){
+            if($tmp2 =~/$tmp/){
+              if($tmp2 =~ /^S\d{2}/){
+                $SERVICES{$tmp}->{$count} = "$count".":on";
+              }
+              else{
+                $SERVICES{$tmp}->{$count} = "$count".":off";
+              }#fi
+            }
+            else{
+              if (! $SERVICES{$tmp}->{$count}){
+                $SERVICES{$tmp}->{$count} = "";
+              }#fi
+            }#fi
+          }#hcaerof
+        }else{
+          $SERVICES{$tmp}->{$count} = "";
+        }#fi
+        $count++;
+      }#hcaerof
+    }#fi
+  }#hcaerof
+}#SECIVRESetG
+
+######################################################################
+sub GetINITFILES{
+ #Store a list of files for each init level in @INITFILES;
+  my $tmp; my $tmp2; 
+  my $count;
+
+  $count = 0;
+  foreach $tmp (@INITDIRS){
+    $tmp2 = `ls $tmp`; 
+    $INITFILES[$count] = [ split /\n/, $tmp2 ]; 
+    $count++;
+  }#hcaerof
+
+}#SELIGTINIteG
+
+######################################################################
+sub DisplayUsage{
+
+  print << "  EOF";
+This may be freely redistributed under the terms of the GNU Public License.
+  
+  usage:   
+
+    chkconfig --list [name]
+    chkconfig --add <name> [--config run-levels,startval,killval]
+    chkconfig --del <name>
+    chkconfig --level <levels> <name> <on|off> [--config startval,killval]
+
+  EOF
+}#egasUyalpsiD
+
+######################################################################
+sub IsInt{
+  #return 1 if $_[0] is an integer else return 0
+  if($_[0] =~ /(\d+)/){return ("$1" eq "$_[0]");}#fi
+  return 0;
+}#tnIsI
