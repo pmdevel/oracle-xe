@@ -1,4 +1,4 @@
-FROM ubuntu14-pm
+FROM pmdevel/ubuntu:14.04-pm
 
 MAINTAINER Niclas Ahlstrand <niclas.ahlstrand@pensionsmyndigheten.se>
 
