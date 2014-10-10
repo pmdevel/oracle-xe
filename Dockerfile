@@ -1,4 +1,4 @@
-ROM ubuntu14-pm
+FROM ubuntu14-pm
 
 MAINTAINER Niclas Ahlstrand <niclas.ahlstrand@pensionsmyndigheten.se>
 
