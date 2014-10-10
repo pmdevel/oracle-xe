@@ -5,13 +5,12 @@ MAINTAINER Niclas Ahlstrand <niclas.ahlstrand@pensionsmyndigheten.se>
 ENV PCLOUD_ORACLE_URL http://pc.cd/3Ee
 ENV ORACLE_HOME /u01/app/oracle/product/11.2.0/xe
 
-RUN curl -o /tmp/oracle-xe_11.2.0-2_amd64.deb  $PCLOUD_ORACLE_URL
-
-
 # Necessary packages
-RUN apt-get install -y libaio1 net-tools bc
+RUN apt-get install -y libaio1 net-tools bc curl
 ADD chkconfig /sbin/chkconfig
 RUN chmod 755 /sbin/chkconfig
+
+RUN curl -o /tmp/oracle-xe_11.2.0-2_amd64.deb  $PCLOUD_ORACLE_URL
 
 # Oracle
 RUN ln -s /usr/bin/awk /bin/awk
