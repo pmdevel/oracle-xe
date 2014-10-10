@@ -2,7 +2,7 @@ FROM pmdevel/ubuntu:14.04-pm
 
 MAINTAINER Niclas Ahlstrand <niclas.ahlstrand@pensionsmyndigheten.se>
 
-ENV PCLOUD_ORACLE_URL http://pc.cd/3Ee
+ENV PCLOUD_ORACLE_URL https://c99.pcloud.com/dHZDm7t5Zm4ugFZZZzC5XK7Z2ZZ64LZkZwru7ZWaljPjP1PdymETDrTf4LLbu2m9IX/oracle-xe_11.2.0-2_amd64.deb
 ENV ORACLE_HOME /u01/app/oracle/product/11.2.0/xe
 
 # Necessary packages
@@ -10,7 +10,7 @@ RUN apt-get install -y libaio1 net-tools bc curl
 ADD chkconfig /sbin/chkconfig
 RUN chmod 755 /sbin/chkconfig
 
-RUN curl -L -O $PCLOUD_ORACLE_URL
+RUN curl -L -O https://c99.pcloud.com/dHZDm7t5Zm4ugFZZZzC5XK7Z2ZZ64LZkZwru7ZWaljPjP1PdymETDrTf4LLbu2m9IX/oracle-xe_11.2.0-2_amd64.deb
 RUN mv oracle-xe_11.2.0-2_amd64.deb /tmp/
 
 # Oracle
