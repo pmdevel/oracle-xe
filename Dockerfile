@@ -62,5 +62,5 @@ EXPOSE 1521
 EXPOSE 8080
 
 CMD sed -i -E "s/HOST = [^)]+/HOST = $HOSTNAME/g" $ORACLE_HOME/network/admin/listener.ora; \
-    service oracle-xe start; \
+    service oracle-xe start; 
 
