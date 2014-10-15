@@ -2,22 +2,22 @@ FROM pmdevel/ubuntu:14.04-pm
 
 MAINTAINER Niclas Ahlstrand <niclas.ahlstrand@pensionsmyndigheten.se>
 
-ENV PCLOUD_ORACLE_URL https://c99.pcloud.com/dHZDm7t5Zm4ugFZZZzC5XK7Z2ZZ64LZkZwru7ZWaljPjP1PdymETDrTf4LLbu2m9IX/oracle-xe_11.2.0-2_amd64.deb
 ENV ORACLE_HOME /u01/app/oracle/product/11.2.0/xe
 
 # Necessary packages
-RUN apt-get install -y libaio1 net-tools bc curl
+RUN apt-get install -y libaio1 net-tools bc wget
 ADD chkconfig /sbin/chkconfig
 RUN chmod 755 /sbin/chkconfig
 
-RUN curl -L -O https://c99.pcloud.com/dHZDm7t5Zm4ugFZZZzC5XK7Z2ZZ64LZkZwru7ZWaljPjP1PdymETDrTf4LLbu2m9IX/oracle-xe_11.2.0-2_amd64.deb
+
+RUN wget -L `wget -q -L -O - https://my.pcloud.com/publink/show?code=XZwru7ZWXKcneQzvGb07LA4ktGfwm0GVA2k | grep https | grep oracle | grep href | sed -n 's/.*href="\(.*\)" download.*/\1/p'`
 RUN mv oracle-xe_11.2.0-2_amd64.deb /tmp/
 
 # Oracle
 RUN ln -s /usr/bin/awk /bin/awk
 RUN mkdir -p /var/lock/subsys
-#RUN dpkg --install /tmp/oracle-xe_11.2.0-2_amd64.deb
-#RUN rm -f /tmp/oracle-xe_11.2.0-2_amd64.deb
+RUN dpkg --install /tmp/oracle-xe_11.2.0-2_amd64.deb
+RUN rm -f /tmp/oracle-xe_11.2.0-2_amd64.deb
 
 #ADD init.ora $ORACLE_HOME/config/scripts/
 #ADD initXETemp.ora $ORACLE_HOME/config/scripts/
