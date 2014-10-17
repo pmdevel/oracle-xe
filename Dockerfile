@@ -3,7 +3,7 @@ FROM pmdevel/ubuntu:14.04-pm
 MAINTAINER Niclas Ahlstrand <niclas.ahlstrand@pensionsmyndigheten.se>
 
 ENV ORACLE_HOME /u01/app/oracle/product/11.2.0/xe
-ENF TMP_DIR /tmp/docker_install_dir
+ENV TMP_DIR /tmp/docker_install_dir
 
 # Necessary packages
 RUN apt-get install -y libaio1 net-tools bc wget
