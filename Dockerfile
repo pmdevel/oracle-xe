@@ -10,6 +10,8 @@ RUN apt-get install -y libaio1 net-tools bc wget
 ADD chkconfig /sbin/chkconfig
 RUN chmod 755 /sbin/chkconfig
 
+RUN mkdir -p $TMP_DIR
+
 # Download Oracle XE package (too big to store on github) 
 RUN wget -L `wget -q -L -O - https://my.pcloud.com/publink/show?code=XZwru7ZWXKcneQzvGb07LA4ktGfwm0GVA2k | grep https | grep oracle | grep href | sed -n 's/.*href="\(.*\)" download.*/\1/p'`
 RUN mv oracle-xe_11.2.0-2_amd64.deb $TMP_DIR/
