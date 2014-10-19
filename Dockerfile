@@ -31,7 +31,7 @@ ADD change_character_set.sh	$TMP_DIR/
 
 RUN /etc/init.d/oracle-xe configure < $TMP_DIR/oracle_config.txt
 
-RUN sed -i -E 's/\(KEY=[A-Z_]*\)/KEY=EXTPROC0/g' $ORACLE_HOME/network/admin/listener.ora
+RUN sed -i -E 's/KEY = [A-Z_]+/KEY = EXTPROC0/g' $ORACLE_HOME/network/admin/listener.ora
 
 RUN echo "export ORACLE_HOME=$ORACLE_HOME"    >> /etc/bash.bashrc
 RUN echo "export PATH=$ORACLE_HOME/bin:$PATH" >> /etc/bash.bashrc
