@@ -52,7 +52,7 @@ RUN echo "export ORACLE_SID=XE"               >> /etc/bash.bashrc
 RUN rm -rf $TMP_DIR
 
 # Stop db
-RUN service oracle-xe stop
+#RUN service oracle-xe stop
 
 
 # Add a "Message of the Day" to help identify container when logging in via SSH
