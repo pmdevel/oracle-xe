@@ -21,9 +21,9 @@ RUN ln -s /usr/bin/awk /bin/awk
 RUN mkdir -p /var/lock/subsys
 RUN dpkg --install $TMP_DIR/oracle-xe_11.2.0-2_amd64.deb
 
-ADD init.ora				$ORACLE_HOME/config/scripts/
-ADD initXETemp.ora			$ORACLE_HOME/config/scripts/
-RUN chown oracle:dba 		$ORACLE_HOME/config/scripts/*
+#ADD init.ora				$ORACLE_HOME/config/scripts/
+#ADD initXETemp.ora			$ORACLE_HOME/config/scripts/
+#RUN chown oracle:dba 		$ORACLE_HOME/config/scripts/*
 ADD oracle_config.txt		$TMP_DIR/
 ADD shutdown_db.sh 			$TMP_DIR/
 ADD shutdown_db.sql			$TMP_DIR/
@@ -38,15 +38,15 @@ RUN echo "export PATH=$ORACLE_HOME/bin:$PATH" >> /etc/bash.bashrc
 RUN echo "export ORACLE_SID=XE"               >> /etc/bash.bashrc
 
 # Start db and listeners
-RUN service oracle-xe start
+#RUN service oracle-xe start
 
 # Shutdown db
-RUN chmod 755 $TMP_DIR/shutdown_db.sh
-RUN $TMP_DIR/shutdown_db.sh
+#RUN chmod 755 $TMP_DIR/shutdown_db.sh
+#RUN $TMP_DIR/shutdown_db.sh
 
 # Change character set
-RUN chmod 755 $TMP_DIR/change_character_set.sh
-RUN $TMP_DIR/change_character_set.sh WE8ISO8859P15
+#RUN chmod 755 $TMP_DIR/change_character_set.sh
+#RUN $TMP_DIR/change_character_set.sh WE8ISO8859P15
 
 # Clean-up
 RUN rm -rf $TMP_DIR
