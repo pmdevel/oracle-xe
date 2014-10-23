@@ -29,9 +29,9 @@ ADD shutdown_db.sh 			$TMP_DIR/
 ADD shutdown_db.sql			$TMP_DIR/
 ADD change_character_set.sh	$TMP_DIR/
 
-RUN /etc/init.d/oracle-xe configure < $TMP_DIR/oracle_config.txt
+#RUN /etc/init.d/oracle-xe configure < $TMP_DIR/oracle_config.txt
 
-RUN sed -i -E 's/KEY = [A-Z_]+/KEY = EXTPROC0/g' $ORACLE_HOME/network/admin/listener.ora
+#RUN sed -i -E 's/KEY = [A-Z_]+/KEY = EXTPROC0/g' $ORACLE_HOME/network/admin/listener.ora
 
 RUN echo "export ORACLE_HOME=$ORACLE_HOME"    >> /etc/bash.bashrc
 RUN echo "export PATH=$ORACLE_HOME/bin:$PATH" >> /etc/bash.bashrc
@@ -62,7 +62,9 @@ EXPOSE 22
 EXPOSE 1521
 EXPOSE 8080
 
-CMD sed -i -E "s/HOST = [^)]+/HOST = $HOSTNAME/g" $ORACLE_HOME/network/admin/listener.ora; \
-    service oracle-xe start; \
-    /usr/sbin/sshd -D
+#CMD sed -i -E "s/HOST = [^)]+/HOST = $HOSTNAME/g" $ORACLE_HOME/network/admin/listener.ora; \
+#    service oracle-xe start; \
+#    /usr/sbin/sshd -D
+
+CMD  /usr/sbin/sshd -D
 
