@@ -6,7 +6,7 @@ ENV ORACLE_HOME /u01/app/oracle/product/11.2.0/xe
 ENV TMP_DIR /tmp/docker_install_dir
 
 # Necessary packages
-RUN apt-get install -y libaio1 net-tools bc wget
+RUN apt-get install -y libaio1 bc 
 ADD chkconfig /sbin/chkconfig
 RUN chmod 755 /sbin/chkconfig
 
@@ -33,30 +33,30 @@ RUN /etc/init.d/oracle-xe configure < $TMP_DIR/oracle_config.txt
 
 RUN sed -i -E 's/KEY = [A-Z_]+/KEY = EXTPROC0/g' $ORACLE_HOME/network/admin/listener.ora
 
-RUN echo "export ORACLE_HOME=$ORACLE_HOME"    						>> /etc/bash.bashrc
-RUN echo "export PATH=$ORACLE_HOME/bin:$PATH" 						>> /etc/bash.bashrc
-RUN echo "export ORACLE_SID=XE"               						>> /etc/bash.bashrc
-RUN echo "export NLS_LANG=`$ORACLE_HOME/bin/nls_lang.sh`"			>> /etc/bash.bashrc
-RUN echo "export ORACLE_BASE=/u01/app/oracle"						>> /etc/bash.bashrc
-RUN echo "export LD_LIBRARY_PATH=$ORACLE_HOME/lib:$LD_LIBRARY_PATH"	>> /etc/bash.bashrc
+RUN echo "export ORACLE_HOME=$ORACLE_HOME" >> /etc/bash.bashrc
+RUN echo "export PATH=$ORACLE_HOME/bin:$PATH" >> /etc/bash.bashrc
+RUN echo "export ORACLE_SID=XE" >> /etc/bash.bashrc
+RUN echo "export NLS_LANG=`$ORACLE_HOME/bin/nls_lang.sh`" >> /etc/bash.bashrc
+RUN echo "export ORACLE_BASE=/u01/app/oracle" >> /etc/bash.bashrc
+RUN echo "export LD_LIBRARY_PATH=$ORACLE_HOME/lib:$LD_LIBRARY_PATH" >> /etc/bash.bashrc
 
 
 # Start db and listeners
-RUN service oracle-xe start
+#RUN service oracle-xe start
 
 # Shutdown db
-RUN chmod 755 $TMP_DIR/shutdown_db.sh
-RUN $TMP_DIR/shutdown_db.sh
+#RUN chmod 755 $TMP_DIR/shutdown_db.sh
+#RUN $TMP_DIR/shutdown_db.sh
 
 # Change character set
-RUN chmod 755 $TMP_DIR/change_character_set.sh
-RUN $TMP_DIR/change_character_set.sh WE8ISO8859P15
+#RUN chmod 755 $TMP_DIR/change_character_set.sh
+#RUN $TMP_DIR/change_character_set.sh WE8ISO8859P15
 
 # Clean-up
-RUN rm -rf $TMP_DIR
+#RUN rm -rf $TMP_DIR
 
 # Stop db
-RUN service oracle-xe stop
+#RUN service oracle-xe stop
 
 
 # Add a "Message of the Day" to help identify container when logging in via SSH
