@@ -42,25 +42,24 @@ RUN echo "export LD_LIBRARY_PATH=$ORACLE_HOME/lib:$LD_LIBRARY_PATH" >> /etc/bash
 
 
 # Start db and listeners
-#RUN service oracle-xe start
+RUN lsnrctl start 
 
 # Shutdown db
-#RUN chmod 755 $TMP_DIR/shutdown_db.sh
-#RUN $TMP_DIR/shutdown_db.sh
+RUN chmod 755 $TMP_DIR/shutdown_db.sh
+RUN $TMP_DIR/shutdown_db.sh
 
 # Change character set
-#RUN chmod 755 $TMP_DIR/change_character_set.sh
-#RUN $TMP_DIR/change_character_set.sh WE8ISO8859P15
+RUN chmod 755 $TMP_DIR/change_character_set.sh
+RUN $TMP_DIR/change_character_set.sh WE8ISO8859P15
+
+RUN lsnrctl stop 
 
 # Clean-up
-#RUN rm -rf $TMP_DIR
-
-# Stop db
-#RUN service oracle-xe stop
-
+RUN rm -rf $TMP_DIR
+RUN rm -rf /u01/app/oracle/diag/tnslsnr/*
 
 # Add a "Message of the Day" to help identify container when logging in via SSH
-RUN echo '[ Ubuntu 14.04 PM Oracle XE]' > /etc/motd
+RUN echo '[ Ubuntu 14.04 PM Oracle XE ]' > /etc/motd
 
 EXPOSE 22
 EXPOSE 1521
