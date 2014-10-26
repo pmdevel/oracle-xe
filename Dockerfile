@@ -28,6 +28,8 @@ ADD oracle_config.txt		$TMP_DIR/
 ADD shutdown_db.sh 			$TMP_DIR/
 ADD shutdown_db.sql			$TMP_DIR/
 ADD change_character_set.sh	$TMP_DIR/
+ADD start_stop_tnslistener.sh $TMP_DIR/
+RUN chmod 755 				$TMP_DIR/start_stop_tnslistener.sh
 
 RUN /etc/init.d/oracle-xe configure < $TMP_DIR/oracle_config.txt
 
@@ -41,8 +43,8 @@ RUN echo "export ORACLE_BASE=/u01/app/oracle" >> /etc/bash.bashrc
 RUN echo "export LD_LIBRARY_PATH=$ORACLE_HOME/lib:$LD_LIBRARY_PATH" >> /etc/bash.bashrc
 
 
-# Start db and listeners
-RUN lsnrctl start 
+# Start listeners
+RUN $TMP_DIR/start_stop_tnslistener.sh start 
 
 # Shutdown db
 RUN chmod 755 $TMP_DIR/shutdown_db.sh
@@ -52,7 +54,8 @@ RUN $TMP_DIR/shutdown_db.sh
 RUN chmod 755 $TMP_DIR/change_character_set.sh
 RUN $TMP_DIR/change_character_set.sh WE8ISO8859P15
 
-RUN lsnrctl stop 
+# Stop listeners
+RUN $TMP_DIR/start_stop_tnslistener.sh stop
 
 # Clean-up
 RUN rm -rf $TMP_DIR
