@@ -1,5 +1,0 @@
-
-SHUTDOWN;
-
-exit;
-
