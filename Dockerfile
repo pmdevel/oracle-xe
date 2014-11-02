@@ -47,6 +47,5 @@ EXPOSE 8080
 
 CMD sed -i -E "s/HOST = [^)]+/HOST = $HOSTNAME/g" $ORACLE_HOME/network/admin/listener.ora; \
     sed -i -E "s/HOST = [^)]+/HOST = $HOSTNAME/g" $ORACLE_HOME/network/admin/tnsnames.ora; \
-    service oracle-xe start; \
-    /usr/sbin/sshd -D
+    service oracle-xe start; 
 
