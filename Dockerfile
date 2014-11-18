@@ -41,7 +41,6 @@ RUN rm -rf $TMP_DIR
 # Add a "Message of the Day" to help identify container when logging in via SSH
 RUN echo '[ Ubuntu 14.04 Oracle XE ]' > /etc/motd
 
-EXPOSE 22
 EXPOSE 1521
 EXPOSE 8080
 
