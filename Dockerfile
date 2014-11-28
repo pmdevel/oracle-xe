@@ -6,18 +6,16 @@ ENV ORACLE_HOME /u01/app/oracle/product/11.2.0/xe
 ENV TMP_DIR /tmp/docker_install_dir
 
 # Necessary packages
-RUN apt-get install -y libaio1 software-properties-common
+RUN apt-get install -y libaio1 
 ADD chkconfig /sbin/chkconfig
 RUN chmod 755 /sbin/chkconfig
 
 # Install Java.
-RUN \
-  echo oracle-java7-installer shared/accepted-oracle-license-v1-1 select true | debconf-set-selections && \
-  add-apt-repository -y ppa:webupd8team/java && \
-  apt-get update && \
-  apt-get install -y oracle-java7-installer && \
-  rm -rf /var/lib/apt/lists/* && \
-  rm -rf /var/cache/oracle-jdk7-installer
+RUN echo "deb http://ppa.launchpad.net/webupd8team/java/ubuntu precise main" | tee -a /etc/apt/sources.list
+RUN echo "deb-src http://ppa.launchpad.net/webupd8team/java/ubuntu precise main" | tee -a /etc/apt/sources.list
+RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys EEA14886
+RUN apt-get update
+RUN apt-get install oracle-java7-installer
 
 # Define commonly used JAVA_HOME variable
 ENV JAVA_HOME /usr/lib/jvm/java-7-oracle
