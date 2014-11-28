@@ -13,6 +13,7 @@ RUN chmod 755 /sbin/chkconfig
 # Install Java.
 RUN echo "deb http://ppa.launchpad.net/webupd8team/java/ubuntu precise main" | tee -a /etc/apt/sources.list
 RUN echo "deb-src http://ppa.launchpad.net/webupd8team/java/ubuntu precise main" | tee -a /etc/apt/sources.list
+RUN echo "debconf shared/accepted-oracle-license-v1-1 select true" | debconf-set-selections
 RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys EEA14886
 RUN apt-get update
 RUN apt-get -y install oracle-java7-installer
