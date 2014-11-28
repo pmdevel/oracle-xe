@@ -15,7 +15,7 @@ RUN echo "deb http://ppa.launchpad.net/webupd8team/java/ubuntu precise main" | t
 RUN echo "deb-src http://ppa.launchpad.net/webupd8team/java/ubuntu precise main" | tee -a /etc/apt/sources.list
 RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys EEA14886
 RUN apt-get update
-RUN apt-get install oracle-java7-installer
+RUN apt-get -y install oracle-java7-installer
 
 # Define commonly used JAVA_HOME variable
 ENV JAVA_HOME /usr/lib/jvm/java-7-oracle
