@@ -6,7 +6,7 @@ ENV ORACLE_HOME /u01/app/oracle/product/11.2.0/xe
 ENV TMP_DIR /tmp/docker_install_dir
 
 # Necessary packages
-RUN apt-get install -y libaio1 bc 
+RUN apt-get install -y libaio1 software-properties-common python-software-properties
 ADD chkconfig /sbin/chkconfig
 RUN chmod 755 /sbin/chkconfig
 
