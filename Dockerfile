@@ -54,8 +54,9 @@ RUN echo '[ Ubuntu 14.04 Oracle XE ]' > /etc/motd
 
 EXPOSE 1521
 EXPOSE 8080
+EXPOSE 22
 
-CMD sed -i -E "s/HOST = [^)]+/HOST = $HOSTNAME/g" $ORACLE_HOME/network/admin/listener.ora; \
-    sed -i -E "s/HOST = [^)]+/HOST = $HOSTNAME/g" $ORACLE_HOME/network/admin/tnsnames.ora; \
-    service oracle-xe start; 
+CMD sed -i -E "s/HOST = [^)]+/HOST = $HOSTNAME/g" $ORACLE_HOME/network/admin/*.ora; \
+    service oracle-xe start; \
+    /usr/sbin/sshd -D
 
