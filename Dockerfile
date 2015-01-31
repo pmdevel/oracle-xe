@@ -7,7 +7,7 @@ RUN yum install -y libaio bc flex openssh-server
 # - Check RPM SHA1
 # - Work around the Swap memory limitation
 # - Work around the sysctl limitation of Docker
-ADD oracle-xe-11.2.0-1.0.x86_64.rpm /tmp/
+ADD oracle-xe-11.2.0-1.0.x86_64.rpm.* /tmp/
 RUN cat /tmp/oracle-xe-11.2.0-1.0.x86_64.rpm.x* > /tmp/oracle-xe-11.2.0-1.0.x86_64.rpm \ 
     && sha1sum /tmp/oracle-xe-11.2.0-1.0.x86_64.rpm | grep -q "49e850d18d33d25b9146daa5e8050c71c30390b7" \
     && mv /usr/bin/free /usr/bin/free.bak \
