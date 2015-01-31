@@ -1,4 +1,0 @@
-oracle-xe
-=========
-
-Oracle XE
